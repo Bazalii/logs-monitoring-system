@@ -1,0 +1,13 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path="docker-compose.yaml" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="Logly.LogsGenerator/Logly.LogsGenerator.csproj" />
+    <Project Path="Logly.RawLogsHandler/Logly.RawLogsHandler.csproj" />
+  </Folder>
+  <Folder Name="/src/libs/">
+    <Project Path="Logly.Kafka/Logly.Kafka.csproj" />
+    <Project Path="Logly.Serialization/Logly.Serialization.csproj" />
+  </Folder>
+</Solution>
