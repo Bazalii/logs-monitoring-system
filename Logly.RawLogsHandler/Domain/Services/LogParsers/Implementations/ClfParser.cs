@@ -94,19 +94,9 @@ public sealed partial class ClfParser : IParser
         var source = customSource ?? "web-access";
         var env = customEnv ?? "unknown";
 
-        var id = LogIdGenerator.GenerateStableUInt64(
-            $"{source}|{host}|{env}|{createdAt:O}|{request}|{raw}");
-
         return new LogEntry(
-            id,
-            createdAt,
-            receivedAt,
-            level,
-            source,
-            host,
-            env,
-            request,
-            payload.AsReadOnly());
+            createdAt, receivedAt, level, source,
+            host, env, request, payload.AsReadOnly());
     }
 
     private static string? NormalizeNil(string s) => s == "-" ? null : s;

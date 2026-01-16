@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 namespace Logly.RawLogsHandler.Domain.Models.Parsing;
 
 public sealed record LogEntry(
-    ulong Id,
     DateTimeOffset CreatedAt,
     DateTimeOffset ReceivedAt,
     string Level,
