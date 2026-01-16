@@ -10,7 +10,7 @@ public sealed class JsonLogParser : IParser
 {
     private static readonly HashSet<string> Standard = new(StringComparer.OrdinalIgnoreCase)
     {
-        "id", "created_at", "timestamp", "time", "received_at", "level",
+        "created_at", "timestamp", "time", "received_at", "level",
         "source", "host", "environment", "env", "message", "msg", "payload"
     };
 
@@ -47,12 +47,9 @@ public sealed class JsonLogParser : IParser
         var message = TryGetString(obj, "message") ?? TryGetString(obj, "msg") ?? obj.GetRawText();
         var payload = BuildPayloadFromJson(obj);
 
-        var id = TryGetUInt64(obj, "id")
-                 ?? LogIdGenerator.GenerateStableUInt64($"{source}|{host}|{env}|{createdAt:O}|{message}|{rawForId}");
-
         return new LogEntry(
-            id, createdAt, receivedAt, level,
-            source, host, env, message, payload);
+            createdAt, receivedAt, level, source,
+            host, env, message, payload);
     }
 
     private static ReadOnlyDictionary<string, object?> BuildPayloadFromJson(JsonElement obj)

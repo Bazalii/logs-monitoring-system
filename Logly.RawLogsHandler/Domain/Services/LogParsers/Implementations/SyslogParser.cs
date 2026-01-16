@@ -123,11 +123,9 @@ public sealed class SyslogParser : IParser
             payload["stack_trace"] = stackTrace;
         }
 
-        var id = LogIdGenerator.GenerateStableUInt64($"{app}|{host}|{env}|{createdAt:O}|{message}|{raw}");
-
         return new LogEntry(
-            id, createdAt, receivedAt, level,
-            app, host, env, message, payload.AsReadOnly());
+            createdAt, receivedAt, level, app,
+            host, env, message, payload.AsReadOnly());
     }
 
     private static string? NormalizeLevel(string? level)

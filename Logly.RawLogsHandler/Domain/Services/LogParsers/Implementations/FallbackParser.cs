@@ -19,11 +19,8 @@ public sealed class FallbackParser : IParser
             }
             .AsReadOnly();
 
-        var id = LogIdGenerator.GenerateStableUInt64(
-            $"{source}|{host}|{env}|{receivedAt:O}|{raw}");
-
         return new LogEntry(
-            id, receivedAt, receivedAt, "Info", source,
+            receivedAt, receivedAt, "Info", source,
             host, env, raw, payload);
     }
 }
