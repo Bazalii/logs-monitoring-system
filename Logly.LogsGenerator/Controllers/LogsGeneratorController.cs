@@ -12,7 +12,8 @@ public class LogsGeneratorController(
 {
     [HttpPost("kafka")]
     public async Task<ActionResult> SendLogsToKafkaAsync(
-        GenerateKafkaLogsRequest request)
+        GenerateKafkaLogsRequest request,
+        CancellationToken cancellation)
     {
         var numberOfLogs = request.NumberOfLogs;
 
@@ -31,7 +32,8 @@ public class LogsGeneratorController(
             return BadRequest("format must be one of: json, syslog, clf");
         }
 
-        await logsGeneratorService.SendLogsToKafkaAsync(numberOfLogs, format);
+        await logsGeneratorService.SendLogsToKafkaAsync(
+            numberOfLogs, request.Period, format, cancellation);
 
         return Ok();
     }
