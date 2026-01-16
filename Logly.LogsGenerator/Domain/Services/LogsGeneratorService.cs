@@ -7,7 +7,28 @@ public sealed class LogsGeneratorService(
     ILogsProducer logsProducer)
     : ILogsGeneratorService
 {
-    public async Task SendLogsToKafkaAsync(int numberOfLogs, string format)
+    public async Task SendLogsToKafkaAsync(
+        int numberOfLogs,
+        TimeSpan? period,
+        string format,
+        CancellationToken cancellation)
+    {
+        if (period is null)
+        {
+            await SendLogs(numberOfLogs, format);
+
+            return;
+        }
+
+        while (cancellation.IsCancellationRequested is false)
+        {
+            await SendLogs(numberOfLogs, format);
+
+            await Task.Delay(period.Value, cancellation);
+        }
+    }
+
+    private async Task SendLogs(int numberOfLogs, string format)
     {
         for (var i = 0; i < numberOfLogs; i++)
         {

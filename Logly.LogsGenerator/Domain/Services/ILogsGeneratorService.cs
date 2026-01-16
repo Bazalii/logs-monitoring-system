@@ -4,5 +4,7 @@ public interface ILogsGeneratorService
 {
     Task SendLogsToKafkaAsync(
         int numberOfLogs,
-        string format);
+        TimeSpan? period,
+        string format,
+        CancellationToken cancellation);
 }
