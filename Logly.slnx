@@ -3,6 +3,7 @@
     <File Path="docker-compose.yaml" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="Logly.LogsAnalyzer/Logly.LogsAnalyzer.csproj" />
     <Project Path="Logly.LogsGenerator/Logly.LogsGenerator.csproj" />
     <Project Path="Logly.ParsedLogsHandler/Logly.ParsedLogsHandler.csproj" />
     <Project Path="Logly.RawLogsHandler/Logly.RawLogsHandler.csproj" />
