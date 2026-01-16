@@ -10,23 +10,15 @@
       <PackageReference Include="Confluent.Kafka" Version="2.13.0" />
       <PackageReference Include="Microsoft.Extensions.Configuration" Version="10.0.1" />
       <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="10.0.1" />
-      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.0" />
+      <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="10.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.1" />
+      <PackageReference Include="Microsoft.Extensions.Options" Version="10.0.1" />
     </ItemGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\Logly.Serialization\Logly.Serialization.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
-        <HintPath>..\..\..\..\..\.dotnet\shared\Microsoft.AspNetCore.App\10.0.1\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
-      </Reference>
-      <Reference Include="Microsoft.Extensions.Logging.Abstractions">
-        <HintPath>..\..\..\..\..\.dotnet\shared\Microsoft.AspNetCore.App\10.0.1\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
-      </Reference>
-      <Reference Include="Microsoft.Extensions.Options">
-        <HintPath>..\..\..\..\..\.dotnet\shared\Microsoft.AspNetCore.App\10.0.1\Microsoft.Extensions.Options.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 
 </Project>
