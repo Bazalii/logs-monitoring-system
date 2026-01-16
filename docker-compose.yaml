@@ -1,0 +1,347 @@
+﻿services:
+  logs-generator:
+    build:
+      context: .
+      dockerfile: Logly.LogsGenerator/Dockerfile
+    ports:
+      - "5000:5000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: docker
+  raw-logs-handler:
+    build:
+      context: .
+      dockerfile: Logly.RawLogsHandler/Dockerfile
+    ports:
+      - "5001:5001"
+    environment:
+      ASPNETCORE_ENVIRONMENT: docker
+  parsed-logs-handler:
+    build:
+      context: .
+      dockerfile: Logly.ParsedLogsHandler/Dockerfile
+    ports:
+      - "5002:5002"
+    environment:
+      ASPNETCORE_ENVIRONMENT: docker
+  logs-analyzer:
+    build:
+      context: .
+      dockerfile: Logly.LogsAnalyzer/Dockerfile
+    ports:
+      - "5003:5003"
+    environment:
+      ASPNETCORE_ENVIRONMENT: docker
+        
+  kafka1:
+    image: bitnamilegacy/kafka:3.7.1-debian-12-r4
+    container_name: kafka1
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_KRAFT_CLUSTER_ID=logly-kraft-cluster-000000000000
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=1
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka1:9093,2@kafka2:9093,3@kafka3:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:19092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka1:9092,PLAINTEXT_HOST://localhost:9092
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+      - KAFKA_CFG_OFFSETS_TOPIC_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=3
+      - KAFKA_CFG_TRANSACTION_STATE_LOG_MIN_ISR=2
+    ports:
+      - "9092:19092"
+    volumes:
+      - kafka1_data:/bitnami/kafka
+
+  kafka2:
+    image: bitnamilegacy/kafka:3.7.1-debian-12-r4
+    container_name: kafka2
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_KRAFT_CLUSTER_ID=logly-kraft-cluster-000000000000
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=2
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka1:9093,2@kafka2:9093,3@kafka3:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:19092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka2:9092,PLAINTEXT_HOST://localhost:9094
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    ports:
+      - "9094:19092"
+    volumes:
+      - kafka2_data:/bitnami/kafka
+
+  kafka3:
+    image: bitnamilegacy/kafka:3.7.1-debian-12-r4
+    container_name: kafka3
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_KRAFT_CLUSTER_ID=logly-kraft-cluster-000000000000
+      - KAFKA_ENABLE_KRAFT=yes
+      - KAFKA_CFG_NODE_ID=3
+      - KAFKA_CFG_PROCESS_ROLES=controller,broker
+      - KAFKA_CFG_CONTROLLER_QUORUM_VOTERS=1@kafka1:9093,2@kafka2:9093,3@kafka3:9093
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093,PLAINTEXT_HOST://:19092
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kafka3:9092,PLAINTEXT_HOST://localhost:9095
+      - KAFKA_CFG_CONTROLLER_LISTENER_NAMES=CONTROLLER
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=PLAINTEXT
+    ports:
+      - "9095:19092"
+    volumes:
+      - kafka3_data:/bitnami/kafka
+
+  kafka-init:
+    image: bitnamilegacy/kafka:3.7.1-debian-12-r4
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    environment:
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_KRAFT_CLUSTER_ID=logly-kraft-cluster-000000000000
+    entrypoint:
+      - /bin/bash
+      - -c
+      - |
+        echo "Waiting for Kafka..."
+        sleep 10
+
+        kafka-topics.sh --bootstrap-server kafka1:9092 \
+          --create --if-not-exists \
+          --topic logs.raw \
+          --partitions 1 \
+          --replication-factor 3 \
+          --config min.insync.replicas=2
+
+        kafka-topics.sh --bootstrap-server kafka1:9092 \
+          --create --if-not-exists \
+          --topic logs.parsed \
+          --partitions 1 \
+          --replication-factor 3 \
+          --config min.insync.replicas=2
+
+        echo "Kafka topics created."
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    depends_on:
+      - kafka1
+      - kafka2
+      - kafka3
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local-kraft
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka1:9092,kafka2:9092,kafka3:9092
+  
+  clickhouse:
+    image: clickhouse/clickhouse-server:25.8
+    container_name: clickhouse
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    environment:
+      - CLICKHOUSE_DB=default
+      - CLICKHOUSE_USER=default
+      - CLICKHOUSE_PASSWORD=default
+    volumes:
+      - clickhouse_data:/var/lib/clickhouse
+    healthcheck:
+      test: [ "CMD-SHELL", "wget -qO- http://localhost:8123/ping | grep -q Ok" ]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+
+  clickhouse-init:
+    image: clickhouse/clickhouse-server:25.8
+    container_name: clickhouse-init
+    depends_on:
+      - clickhouse
+    volumes:
+      - ./infrastructure/clickhouse/init:/init:ro
+    command:
+      - /bin/bash
+      - -lc
+      - |
+        set -euxo pipefail
+
+        echo "=== clickhouse-init: start ==="
+        echo "Waiting for ClickHouse..."
+        until wget -qO- http://clickhouse:8123/ping | grep -q Ok; do
+          sleep 1
+        done
+
+        echo "ClickHouse is up."
+        echo "Listing /init:"
+        ls -la /init
+
+        shopt -s nullglob
+        for f in /init/*.sql; do
+          echo "Running $$f"
+          clickhouse-client --host clickhouse --user default --password default --multiquery < "$$f"
+        done
+
+        echo "=== clickhouse-init: done ==="
+
+  airflow-postgres:
+    image: postgres:16
+    container_name: airflow-postgres
+    environment:
+      - POSTGRES_USER=airflow
+      - POSTGRES_PASSWORD=airflow
+      - POSTGRES_DB=airflow
+    volumes:
+      - airflow_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U airflow -d airflow" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  airflow-init:
+    image: apache/airflow:2.10.3
+    container_name: airflow-init
+    depends_on:
+      airflow-postgres:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
+    user: "50000:0"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - airflow_logs:/opt/airflow/logs
+    entrypoint:
+      - /bin/bash
+      - -lc
+      - |
+        set -euxo pipefail
+
+        export PATH="/home/airflow/.local/bin:$PATH"
+        echo "Initializing Airflow DB..."
+        airflow db init
+
+        echo "Creating Airflow admin user..."
+        airflow users create \
+          --username admin \
+          --password admin \
+          --firstname Admin \
+          --lastname User \
+          --role Admin \
+          --email admin@example.com \
+          || true
+
+        echo "Creating Airflow ClickHouse connection (clickhouse_default)..."
+        airflow connections delete clickhouse_default || true
+        airflow connections add clickhouse_default \
+          --conn-type http \
+          --conn-host clickhouse \
+          --conn-port 8123 \
+          --conn-login default \
+          --conn-password default \
+          --conn-extra '{"database":"logly"}'
+
+        echo "Airflow init done."
+
+  airflow-webserver:
+    image: apache/airflow:2.10.3
+    container_name: airflow-webserver
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+      - AIRFLOW__WEBSERVER__EXPOSE_CONFIG=True
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - airflow_logs:/opt/airflow/logs
+    command: webserver
+
+  airflow-scheduler:
+    image: apache/airflow:2.10.3
+    container_name: airflow-scheduler
+    depends_on:
+      airflow-init:
+        condition: service_completed_successfully
+    environment:
+      - AIRFLOW__CORE__EXECUTOR=LocalExecutor
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://airflow:airflow@airflow-postgres:5432/airflow
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      - AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION=False
+    volumes:
+      - ./dags:/opt/airflow/dags
+      - airflow_logs:/opt/airflow/logs
+    command: scheduler
+
+  superset-postgres:
+    image: postgres:16
+    container_name: superset-postgres
+    environment:
+      - POSTGRES_USER=superset
+      - POSTGRES_PASSWORD=superset
+      - POSTGRES_DB=superset
+    volumes:
+      - superset_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U superset -d superset" ]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  superset-redis:
+    image: redis:7
+    container_name: superset-redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "ping" ]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  superset:
+    build: ./infrastructure/superset/build
+    container_name: superset
+    ports:
+      - "8088:8088"
+    environment:
+      SUPERSET_SECRET_KEY: "..."
+      SQLALCHEMY_DATABASE_URI: postgresql+psycopg2://superset:superset@superset-postgres:5432/superset
+      REDIS_HOST: superset-redis
+      REDIS_PORT: "6379"
+      SUPERSET_LOAD_EXAMPLES: "no"
+    volumes:
+      - superset_home:/app/superset_home
+      - ./superset:/app/pythonpath:ro
+    depends_on:
+      superset-postgres:
+        condition: service_healthy
+      superset-redis:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
+    restart: unless-stopped
+
+volumes:
+  kafka1_data:
+  kafka2_data:
+  kafka3_data:
+  clickhouse_data:
+  airflow_postgres_data:
+  airflow_logs:
+  superset_postgres_data:
+  superset_home:
