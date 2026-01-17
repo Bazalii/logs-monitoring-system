@@ -5,11 +5,11 @@ EXPOSE 5002
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["Logly.ParsedLogsHandler/Logly.ParsedLogsHandler.csproj", "Logly.ParsedLogsHandler/"]
-COPY ["Logly.Kafka/Logly.Kafka.csproj", "Logly.Kafka/"]
-COPY ["Logly.Serialization/Logly.Serialization.csproj", "Logly.Serialization/"]
-RUN dotnet restore "Logly.ParsedLogsHandler/Logly.ParsedLogsHandler.csproj"
+
+COPY ["src/Logly.ParsedLogsHandler/Logly.ParsedLogsHandler.csproj", "src/Logly.ParsedLogsHandler/"]
+COPY ["src/Logly.Kafka/Logly.Kafka.csproj", "src/Logly.Kafka/"]
+COPY ["src/Logly.Serialization/Logly.Serialization.csproj", "src/Logly.Serialization/"]
+RUN dotnet restore "src/Logly.ParsedLogsHandler/Logly.ParsedLogsHandler.csproj"
 COPY . .
 WORKDIR "/src/Logly.ParsedLogsHandler"
 RUN dotnet build "./Logly.ParsedLogsHandler.csproj" -c $BUILD_CONFIGURATION -o /app/build

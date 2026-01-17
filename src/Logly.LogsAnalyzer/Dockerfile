@@ -5,10 +5,9 @@ EXPOSE 5003
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["Logly.LogsAnalyzer/Logly.LogsAnalyzer.csproj", "Logly.LogsAnalyzer/"]
-COPY ["Logly.Serialization/Logly.Serialization.csproj", "Logly.Serialization/"]
-RUN dotnet restore "Logly.LogsAnalyzer/Logly.LogsAnalyzer.csproj"
+COPY ["src/Logly.LogsAnalyzer/Logly.LogsAnalyzer.csproj", "src/Logly.LogsAnalyzer/"]
+COPY ["src/Logly.Serialization/Logly.Serialization.csproj", "src/Logly.Serialization/"]
+RUN dotnet restore "src/Logly.LogsAnalyzer/Logly.LogsAnalyzer.csproj"
 COPY . .
 WORKDIR "/src/Logly.LogsAnalyzer"
 RUN dotnet build "./Logly.LogsAnalyzer.csproj" -c $BUILD_CONFIGURATION -o /app/build

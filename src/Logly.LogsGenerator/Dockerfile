@@ -5,11 +5,11 @@ EXPOSE 5000
 
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
-WORKDIR /src
-COPY ["Logly.LogsGenerator/Logly.LogsGenerator.csproj", "Logly.LogsGenerator/"]
-COPY ["Logly.Kafka/Logly.Kafka.csproj", "Logly.Kafka/"]
-COPY ["Logly.Serialization/Logly.Serialization.csproj", "Logly.Serialization/"]
-RUN dotnet restore "Logly.LogsGenerator/Logly.LogsGenerator.csproj"
+
+COPY ["src/Logly.LogsGenerator/Logly.LogsGenerator.csproj", "src/Logly.LogsGenerator/"]
+COPY ["src/Logly.Kafka/Logly.Kafka.csproj", "src/Logly.Kafka/"]
+COPY ["src/Logly.Serialization/Logly.Serialization.csproj", "src/Logly.Serialization/"]
+RUN dotnet restore "src/Logly.LogsGenerator/Logly.LogsGenerator.csproj"
 COPY . .
 WORKDIR "/src/Logly.LogsGenerator"
 RUN dotnet build "./Logly.LogsGenerator.csproj" -c $BUILD_CONFIGURATION -o /app/build
