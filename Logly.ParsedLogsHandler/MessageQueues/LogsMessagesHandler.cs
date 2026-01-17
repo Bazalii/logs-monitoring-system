@@ -4,7 +4,7 @@ using Logly.ParsedLogsHandler.Domain.Services.Logs;
 using Logly.ParsedLogsHandler.Integration.Models.Messages.Logs;
 using Logly.Serialization.Serializers.Implementations;
 
-namespace Logly.RawLogsHandler.MessageQueues;
+namespace Logly.ParsedLogsHandler.MessageQueues;
 
 public class LogsMessagesHandler(
     ILogsService logsService)

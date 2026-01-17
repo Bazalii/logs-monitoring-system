@@ -2,7 +2,6 @@ using Logly.ParsedLogsHandler.Domain.Repositories.Logs;
 using Logly.ParsedLogsHandler.Domain.Services.Logs;
 using Logly.ParsedLogsHandler.Infrastructure.Models;
 using Logly.ParsedLogsHandler.MessageQueues;
-using Logly.RawLogsHandler.MessageQueues;
 using static Logly.Kafka.Extensions.KafkaExtensions;
 
 namespace Logly.ParsedLogsHandler.Infrastructure.Extensions;
