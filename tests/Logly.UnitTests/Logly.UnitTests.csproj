@@ -20,12 +20,12 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Logly.Kafka\Logly.Kafka.csproj" />
-      <ProjectReference Include="..\Logly.LogsAnalyzer\Logly.LogsAnalyzer.csproj" />
-      <ProjectReference Include="..\Logly.LogsGenerator\Logly.LogsGenerator.csproj" />
-      <ProjectReference Include="..\Logly.ParsedLogsHandler\Logly.ParsedLogsHandler.csproj" />
-      <ProjectReference Include="..\Logly.RawLogsHandler\Logly.RawLogsHandler.csproj" />
-      <ProjectReference Include="..\Logly.Serialization\Logly.Serialization.csproj" />
+      <ProjectReference Include="..\..\src\Logly.Kafka\Logly.Kafka.csproj" />
+      <ProjectReference Include="..\..\src\Logly.LogsAnalyzer\Logly.LogsAnalyzer.csproj" />
+      <ProjectReference Include="..\..\src\Logly.LogsGenerator\Logly.LogsGenerator.csproj" />
+      <ProjectReference Include="..\..\src\Logly.ParsedLogsHandler\Logly.ParsedLogsHandler.csproj" />
+      <ProjectReference Include="..\..\src\Logly.RawLogsHandler\Logly.RawLogsHandler.csproj" />
+      <ProjectReference Include="..\..\src\Logly.Serialization\Logly.Serialization.csproj" />
     </ItemGroup>
 
 </Project>

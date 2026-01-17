@@ -2,7 +2,7 @@
   logs-generator:
     build:
       context: .
-      dockerfile: Logly.LogsGenerator/Dockerfile
+      dockerfile: src/Logly.LogsGenerator/Dockerfile
     ports:
       - "5000:5000"
     environment:
@@ -10,7 +10,7 @@
   raw-logs-handler:
     build:
       context: .
-      dockerfile: Logly.RawLogsHandler/Dockerfile
+      dockerfile: src/Logly.RawLogsHandler/Dockerfile
     ports:
       - "5001:5001"
     environment:
@@ -18,7 +18,7 @@
   parsed-logs-handler:
     build:
       context: .
-      dockerfile: Logly.ParsedLogsHandler/Dockerfile
+      dockerfile: src/Logly.ParsedLogsHandler/Dockerfile
     ports:
       - "5002:5002"
     environment:
@@ -26,7 +26,7 @@
   logs-analyzer:
     build:
       context: .
-      dockerfile: Logly.LogsAnalyzer/Dockerfile
+      dockerfile: src/Logly.LogsAnalyzer/Dockerfile
     ports:
       - "5003:5003"
     environment:
