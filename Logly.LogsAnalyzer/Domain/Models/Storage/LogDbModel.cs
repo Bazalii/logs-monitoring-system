@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using Logly.LogsAnalyzer.Domain.Models.Logs;
+using Logly.LogsAnalyzer.Domain.Models.Core.Logs;
 
 namespace Logly.LogsAnalyzer.Domain.Models.Storage;
 

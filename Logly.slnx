@@ -12,4 +12,7 @@
     <Project Path="Logly.Kafka/Logly.Kafka.csproj" />
     <Project Path="Logly.Serialization/Logly.Serialization.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="Logly.UnitTests/Logly.UnitTests.csproj" />
+  </Folder>
 </Solution>

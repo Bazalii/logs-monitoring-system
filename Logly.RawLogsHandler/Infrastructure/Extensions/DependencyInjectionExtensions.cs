@@ -46,7 +46,7 @@ public static class DependencyInjectionExtensions
 
             services.AddSingleton<JsonFileParser>();
             services.AddSingleton<TextFileParser>();
-            services.AddSingleton<FileParserFacade>();
+            services.AddSingleton<FileParsersFacade>();
 
             services.AddSingleton<ILogsService, LogsService>();
 

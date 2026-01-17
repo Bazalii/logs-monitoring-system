@@ -1,6 +1,6 @@
-using Logly.LogsAnalyzer.Domain.Models.Logs;
+using Logly.LogsAnalyzer.Domain.Models.Core.Logs;
 
-namespace Logly.LogsAnalyzer.Controllers;
+namespace Logly.LogsAnalyzer.Integration.Models.Responses;
 
 public sealed record LogResponse(
     DateTimeOffset CreatedAt,

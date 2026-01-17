@@ -1,6 +1,8 @@
+using Logly.LogsAnalyzer.Domain.Models.Core.Logs;
 using Microsoft.AspNetCore.Mvc;
-using Logly.LogsAnalyzer.Domain.Repositories.Logs;
 using Logly.LogsAnalyzer.Domain.Services.Logs;
+using Logly.LogsAnalyzer.Integration.Models.Requests;
+using Logly.LogsAnalyzer.Integration.Models.Responses;
 
 namespace Logly.LogsAnalyzer.Controllers;
 

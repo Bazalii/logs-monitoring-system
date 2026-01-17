@@ -1,4 +1,4 @@
-namespace Logly.LogsAnalyzer.Controllers;
+namespace Logly.LogsAnalyzer.Integration.Models.Responses;
 
 public sealed record LogsSearchResponse(
     ulong Total,

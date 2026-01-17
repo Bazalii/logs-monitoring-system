@@ -124,7 +124,7 @@ public sealed class SyslogParser : IParser
         }
 
         return new LogEntry(
-            createdAt, receivedAt, level, app,
+            createdAt, receivedAt, level, source,
             host, env, message, payload.AsReadOnly());
     }
 

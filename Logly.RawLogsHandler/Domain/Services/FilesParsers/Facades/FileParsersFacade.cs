@@ -2,7 +2,7 @@ using Logly.RawLogsHandler.Domain.Services.FilesParsers.Implementations;
 
 namespace Logly.RawLogsHandler.Domain.Services.FilesParsers.Facades;
 
-public sealed class FileParserFacade(
+public sealed class FileParsersFacade(
     TextFileParser textFileParser,
     JsonFileParser jsonFileParser)
 {

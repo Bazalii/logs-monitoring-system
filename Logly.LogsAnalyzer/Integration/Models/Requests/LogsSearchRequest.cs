@@ -1,4 +1,4 @@
-namespace Logly.LogsAnalyzer.Controllers;
+namespace Logly.LogsAnalyzer.Integration.Models.Requests;
 
 public sealed record LogsSearchRequest(
     string? Level,
